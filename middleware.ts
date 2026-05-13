@@ -223,8 +223,12 @@ function buildContentSecurityPolicy(input: {
     "form-action 'self'",
     "img-src 'self' data: blob: https:",
     "font-src 'self' data: https:",
+    // SECURITY FIX: Removed 'unsafe-eval' - only keep 'unsafe-inline' for styles
+    // If eval is absolutely needed, consider using trusted-types or web workers
     "style-src 'self' 'unsafe-inline' https:",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:",
+    // SECURITY FIX: Removed 'unsafe-eval' from script-src
+    // Applications should avoid eval() and use safer alternatives
+    "script-src 'self' 'unsafe-inline' https:",
     "connect-src 'self' https: wss:",
     "object-src 'none'",
   ];

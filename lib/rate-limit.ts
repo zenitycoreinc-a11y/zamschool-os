@@ -113,13 +113,27 @@ export async function rateLimitMiddleware(
 
 /**
  * Get client identifier from request
+ * SECURITY FIX: Only trust X-Forwarded-For when behind a known proxy
  */
 export function getClientIdentifier(req: Request, userId?: string): string {
-  const forwarded = req.headers.get('x-forwarded-for');
-  const ip = forwarded?.split(',')[0]?.trim() || 'unknown';
-  
   if (userId) {
     return `user:${userId}`;
+  }
+  
+  // SECURITY FIX: Only use X-Forwarded-For header if we're behind a trusted proxy
+  // In production, this should only be set by your load balancer/reverse proxy
+  const isTrustedProxy = process.env.TRUSTED_PROXY === 'true' || 
+                         process.env.NODE_ENV === 'production';
+  
+  let ip = 'unknown';
+  
+  if (isTrustedProxy) {
+    const forwarded = req.headers.get('x-forwarded-for');
+    ip = forwarded?.split(',')[0]?.trim() || 'unknown';
+  } else {
+    // In development or untrusted environments, don't rely on forwarded headers
+    // as they can be spoofed by clients
+    ip = 'dev-client';
   }
   
   return `ip:${ip}`;

@@ -164,9 +164,21 @@ export async function POST(req: Request) {
             supervisedClassIds: body.supervisedClassIds,
           })
         : emptyTeacherAssignmentInput();
+    
+    // SECURITY FIX: Explicitly whitelist allowed fields instead of spreading user input
+    // This prevents prototype pollution and unauthorized field injection
+    const safeProfileExtras = body.profileExtras || {};
     const profileExtras = sanitizeProfileExtras(role, {
-      ...(body.profileExtras || {}),
-      specialization: teacherAssignments.specializationSummary || body.profileExtras?.specialization,
+      // Only allow explicitly whitelisted fields
+      admission_number: safeProfileExtras.admission_number,
+      class_id: safeProfileExtras.class_id,
+      enrollment_date: safeProfileExtras.enrollment_date,
+      gender: safeProfileExtras.gender,
+      status: safeProfileExtras.status,
+      employee_id: safeProfileExtras.employee_id,
+      department: safeProfileExtras.department,
+      specialization: teacherAssignments.specializationSummary || safeProfileExtras.specialization,
+      hire_date: safeProfileExtras.hire_date,
     });
     const parentExtras = sanitizeParentExtras(body.parentExtras);
 
