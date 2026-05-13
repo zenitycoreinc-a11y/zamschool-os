@@ -17,8 +17,21 @@ export function buildCreatedAuthUserMetadata(input: {
   };
 }
 
+/**
+ * Generate a cryptographically secure temporary password
+ * SECURITY FIX: Use crypto.randomBytes instead of Math.random for better entropy
+ */
 export function generateTemporaryPassword() {
-  const random = Math.random().toString(36).slice(-8);
+  const crypto = require('node:crypto');
+  // Generate 8 random alphanumeric characters using cryptographically secure RNG
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let random = '';
+  const randomBytes = crypto.randomBytes(8);
+  
+  for (let i = 0; i < 8; i++) {
+    random += chars[randomBytes[i] % chars.length];
+  }
+  
   return `Zam@${random}9`;
 }
 
