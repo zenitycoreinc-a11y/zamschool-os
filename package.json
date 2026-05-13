@@ -12,7 +12,13 @@
     "clean": "rm -rf .next .next_broken_*",
     "healthcheck": "node ./scripts/healthcheck.mjs",
     "schema:check": "node ./scripts/schema-check.mjs",
-    "schema:check:strict": "node ./scripts/schema-check.mjs --strict"
+    "schema:check:strict": "node ./scripts/schema-check.mjs --strict",
+    "test": "node --test",
+    "test:watch": "node --test --watch",
+    "test:coverage": "node --test --experimental-test-coverage",
+    "test:lib": "node --test lib/**/*.test.mjs",
+    "test:root": "node --test *.test.mjs",
+    "prepare": "husky || true"
   },
   "dependencies": {
     "@google/genai": "^1.17.0",
